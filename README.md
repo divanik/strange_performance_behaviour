@@ -1,5 +1,9 @@
 # strange_performance_behaviour
 
+Experiment which needs to be tried on different CPUs types. 
+
+Ensure you have linux.
+
 Run with commamnd:
 
 ```
