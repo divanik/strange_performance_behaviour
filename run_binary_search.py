@@ -8,6 +8,8 @@ import uuid
 SOURCES = [
     {"name": "v1", "file": "experiment_binary_search.cpp"},
     {"name": "v2", "file": "experiment_binary_search_2.cpp"},
+    {"name": "v3", "file": "experiment_binary_search_3.cpp"},
+    {"name": "v4", "file": "experiment_binary_search_4.cpp"},
 ]
 MODES = ["1"]
 QUERIES_NUMBER = 10_000_000
@@ -86,9 +88,9 @@ def main():
 
     source_names = [s["name"] for s in SOURCES]
     col = 14
+    ratio_headers = [f"ratio({s}/{source_names[0]})" for s in source_names[1:]]
     header = f"{'compiler':<16} {'mode':<6} {'n':>14}" + "".join(f"  {s:>{col}}" for s in source_names)
-    if len(source_names) == 2:
-        header += f"  {'ratio(v2/v1)':>14}"
+    header += "".join(f"  {r:>{col}}" for r in ratio_headers)
     print(header)
     print("-" * len(header))
 
@@ -97,28 +99,25 @@ def main():
         for s in source_names:
             v = vals.get(s, "N/A")
             row += f"  {v:>{col}}"
-        if len(source_names) == 2:
-            v1 = vals.get(source_names[0])
-            v2 = vals.get(source_names[1])
+        base_val = vals.get(source_names[0])
+        try:
+            f_base = float(base_val)
+        except (TypeError, ValueError):
+            for _ in source_names[1:]:
+                row += f"  {f'{source_names[0]} not a number':>{col}}"
+            print(row)
+            continue
+        for s in source_names[1:]:
+            v = vals.get(s)
             try:
-                f1 = float(v1)
+                f_v = float(v)
             except (TypeError, ValueError):
-                ratio = f"v1 not a number: {v1}"
-                row += f"  {ratio:>14}"
-                print(row)
+                row += f"  {f'{s} not a number':>{col}}"
                 continue
-            try:
-                f2 = float(v2)
-            except (TypeError, ValueError):
-                ratio = f"v2 not a number: {v2}"
-                row += f"  {ratio:>14}"
-                print(row)
-                continue
-            if f1 == 0:
-                ratio = "v1 is zero"
+            if f_base == 0:
+                row += f"  {'base is zero':>{col}}"
             else:
-                ratio = f"{f2 / f1:.4f}"
-            row += f"  {ratio:>14}"
+                row += f"  {f_v / f_base:>{col}.4f}"
         print(row)
 
 
