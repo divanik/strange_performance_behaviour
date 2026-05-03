@@ -25,7 +25,7 @@ def compile_asm(asm_path, binary_path, objdump_path):
         return False
     print(f"  OK -> {binary_path}")
 
-    cmd = ["objdump", "-d", "-C", "--no-addresses", binary_path]
+    cmd = ["objdump", "-d", "-C", binary_path]
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print(f"  objdump FAILED:\n{result.stderr}", file=sys.stderr)
