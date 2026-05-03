@@ -55,8 +55,8 @@ def main():
     compiled = []
     for asm_path in asm_files:
         stem = os.path.splitext(os.path.basename(asm_path))[0]
-        binary_path = os.path.join(BINARIES_DIR, stem)
-        objdump_path = os.path.join(BINARIES_DIR, stem + ".objdump")
+        binary_path = os.path.join(BINARIES_DIR, "binary_" + stem)
+        objdump_path = os.path.join(BINARIES_DIR, "binary_" + stem + ".objdump")
         if compile_asm(asm_path, binary_path, objdump_path):
             compiled.append({"name": stem, "binary": binary_path})
     print()
