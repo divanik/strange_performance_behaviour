@@ -1,3 +1,7 @@
 binaries/binary*
 data/numbers*
 asm_binaries/binary_*
+alignment_sweep/asm/*
+alignment_sweep/bin/*
+alignment_sweep/objdump/*
+alignment_sweep/perf/*

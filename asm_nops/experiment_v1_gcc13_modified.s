@@ -88,7 +88,7 @@ _ZN15BinarySearcher16searchEl:
 	subq	%r8, %rcx
 	sarq	$3, %rcx
 	jmp	.L12
-	.p2align 4,,10
+	.p2align 4,,9
 	.p2align 3
 .L13:
 	shrq	%rax
@@ -2737,11 +2737,6 @@ main:
 	leaq	128(%rsp), %rsi
 	call	_Z13run_benchmarkI13BTreeSearcherIlLm8EEEvRT_RKSt6vectorIlSaIlEE
 .L364:
-	nop
-	nop
-	nop
-	nop
-	nop
 	movq	128(%rsp), %rdi
 	testq	%rdi, %rdi
 	je	.L378
