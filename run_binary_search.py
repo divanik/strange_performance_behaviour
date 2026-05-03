@@ -27,21 +27,44 @@ def make_compiler_configs(run_dir, source):
             "source": source,
             "name": f"g++-13/{slug}",
             "cmd": "g++-13",
-            "flags": ["-std=c++23", "-static", "-fomit-frame-pointer", "-fno-exceptions", "-fno-rtti", "-O3"],
+            "flags": ["-std=c++23", "-fomit-frame-pointer", "-fno-exceptions", "-fno-rtti", "-O3"],
+            "link_flags": ["-static"],
+            "asm": f"{run_dir}/experiment_{slug}_gcc13.s",
             "binary": f"{run_dir}/experiment_{slug}_gcc13",
+            "objdump": f"{run_dir}/experiment_{slug}_gcc13.objdump",
         },
     ]
 
 
 def compile(compiler):
     src = compiler["source"]["file"]
-    cmd = [compiler["cmd"], src] + compiler["flags"] + ["-o", compiler["binary"]]
+    asm = compiler["asm"]
+
+    cmd = [compiler["cmd"], src, "-S"] + compiler["flags"] + ["-o", asm]
     print(f"Compiling {src} with {compiler['name']}: {' '.join(cmd)}")
     result = subprocess.run(cmd, capture_output=True, text=True)
     if result.returncode != 0:
         print(f"  FAILED:\n{result.stderr}", file=sys.stderr)
         return False
+    print(f"  ASM -> {asm}")
+
+    cmd = [compiler["cmd"], asm] + compiler["flags"] + compiler.get("link_flags", []) + ["-o", compiler["binary"]]
+    print(f"Assembling {asm}: {' '.join(cmd)}")
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"  FAILED:\n{result.stderr}", file=sys.stderr)
+        return False
     print(f"  OK -> {compiler['binary']}")
+
+    objdump_file = compiler["objdump"]
+    cmd = ["objdump", "-d", "-C", "--no-addresses", compiler["binary"]]
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    if result.returncode != 0:
+        print(f"  objdump FAILED:\n{result.stderr}", file=sys.stderr)
+    else:
+        with open(objdump_file, "w") as f:
+            f.write(result.stdout)
+        print(f"  OBJDUMP -> {objdump_file}")
     return True
 
 
